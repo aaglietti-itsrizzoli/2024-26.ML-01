@@ -1,0 +1,24 @@
+name: Action di Tag
+on:
+    push:
+jobs:
+    ciao:
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "Ciao, sono una stringa!"
+            - run: echo "Hello, world!"
+            - run: python --version
+            - run: ifconfig
+            - run: pip --version
+            - run: lsb_release -d
+            - run: ls -la
+            - run: pwd
+            - run: env
+    cloneCartella:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                sparse-checkout: |
+                    tag
+            - run: ls -la
