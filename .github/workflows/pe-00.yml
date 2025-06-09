@@ -1,0 +1,56 @@
+name: action di pe # questa è la top level key di nome name
+on:  # questa è key di nome on che è un dizionario
+  push:
+jobs: 
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'ciao mondo'
+      - run: echo 'ciao mondo 2'
+
+#      - run: ifconfig
+#      - run: lsb_release -d
+#      - run: pip list
+#      - run: ls -la
+#      - run: pwd
+#      - run: env
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.7' # Sostituisci con la versione 3.12.7
+      - run: python --version
+      - run: pip install pandas numpy scikit-learn joblib
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            pe
+      - run: python test_training_github.py
+        working-directory: ./pe
+      - run: ls -la
+        working-directory: ./pe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: modello_finale
+          path: pe/best_grid.joblib
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.7' # Sostituisci con la versione 3.12.7
+      - run: python --version
+      - run: pip install pandas numpy scikit-learn joblib flask pytest
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            pe
+      - uses: actions/download-artifact@v4
+        with:
+          name: modello_finale
+          path: ./pe
+      - run: ls -la
+        working-directory: ./pe
+      - run: pytest test_app.py
+        working-directory: ./pe
