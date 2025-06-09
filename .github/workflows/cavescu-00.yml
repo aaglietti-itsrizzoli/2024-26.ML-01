@@ -1,0 +1,51 @@
+name: Action di Cavescu
+on: 
+  push:
+jobs: 
+  train: 
+    runs-on: ubuntu-latest
+    steps: 
+      - run: echo "ciao sono una stringa"
+      - run: echo "ciao sono una stringa 2"
+      - run: python --version
+      - run: ifconfig
+      - run: pip --version
+      - run: lsb_release -d
+      - run: ls -la
+      - run: pwd
+      - run: env
+      - uses: actions/checkout@v4 # svolge git clone
+        with:
+          sparse-checkout: |
+            cavescu
+      - run: ls -la
+      - uses: actions/setup-python@v5 # equivalente di venv
+        with:
+          python-version: '3.13.2' 
+      - run: python --version
+      - run: pip install -r requirements.txt
+        working-directory: cavescu
+      - run: pip install joblib
+      - run: python train_direction.py
+        working-directory: cavescu
+      - uses: actions/upload-artifact@v4
+        with:
+          name: best-artifact
+          path: cavescu/artifact.joblib
+  infer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # svolge git clone
+        with:
+          sparse-checkout: |
+            cavescu
+      - uses: actions/setup-python@v5 # equivalente di venv
+        with:
+          python-version: '3.13.2'
+      - run: pip install -r requirements.txt
+        working-directory: cavescu
+      - run: pip install joblib
+      - run: pip install flask
+      - run: pip install pytest
+      - run: pytest test_app.py
+        working-directory: cavescu
