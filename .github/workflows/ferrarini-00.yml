@@ -1,0 +1,42 @@
+name: action di ferrarini #github action dice che ci deve essere una top level key name
+on:  # dizionario con chiave push
+  push: # una qualsiasi azione di push attiva questa action
+jobs: 
+  ciao:
+    runs-on: ubuntu-latest # qui vuole il sistema operativo
+    steps: #lista di comandi
+      - run: echo "sudo shutdown"
+      - run: python --version
+      - run: pip --version
+      - run: lsb_release -d
+      - run: ls -la 
+      - run: pwd
+      - run: env
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: | # il pipe serve a definire una stringa multilinea
+            .github
+            ferrarini
+      - run: ls -la 
+      - uses: actions/setup-python@v5 # equivalente di venv
+        with:
+          python-version: '3.12.7'
+      - run: python --version
+      - run: pip install scikit-learn pandas pytest flask
+      - run: python script_lr.py
+        working-directory: ferrarini/ml_model
+      - run: ls -la 
+        working-directory: ferrarini/ml_model
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifacto
+          path: ferrarini/ml_model/linear_regression_model.joblib
+      - run: pytest test_appp.py --tb=short
+        working-directory: ferrarini/ml_model
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifacto
+          path: ferrarini/ml_model/linear_regression_model.joblib
+
+
