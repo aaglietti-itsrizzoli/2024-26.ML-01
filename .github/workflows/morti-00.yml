@@ -1,0 +1,33 @@
+name: Action di morti
+on:
+  push: 
+jobs: 
+  ciao:
+    runs-on: ubuntu-latest
+    steps: 
+      - run: echo "qualcosa"
+      - run: echo "ciao jade"
+      - run: python --version
+      - run: pip --version
+      - run: ifconfig
+      - run: lsb_release -d
+      - run: ls -la
+      - run: pwd
+      - run: env
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            morti
+      - run: ls -la
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.1' 
+      - run: python --version
+      - run: pip install -r requirements.txt
+        working-directory: morti
+      - run: python training_ML_morti.py
+        working-directory: morti
+      - uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: morti/linear_model.joblib
