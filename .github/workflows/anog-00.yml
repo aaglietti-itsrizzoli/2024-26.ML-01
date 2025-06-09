@@ -1,0 +1,15 @@
+name: Action di Anog
+on:
+  push:
+jobs:
+  ciao:
+    runs-on: ubuntu-latest
+    steps:
+      - run:  echo "ciao sono una stringa"
+      - run:  echo "ciao sono una stringa"
+      - run: python --version
+      - run: pip --version
+      - run: lsb_release -d
+      - run: ls -la
+      - run: pwd
+      - run : env
