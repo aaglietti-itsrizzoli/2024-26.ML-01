@@ -1,0 +1,66 @@
+name: Action di Eftimie
+
+on:
+  push:
+
+jobs:
+  train:
+    name: Train Model
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Intro
+        run: |
+          echo "Buna seara, Barosane!"
+          echo "Se vede din departare"
+          echo "Ca ai bani in buzunare"
+          echo "Hai sa ne traiesti, Patroane!"
+
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            eftimie
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.7'
+
+      - name: Install dependencies
+        run: pip install scikit-learn==1.6.1
+      - run: pip install -r eftimie/requirements.txt
+
+      - name: Train model
+        run: python inizio.py
+        working-directory: eftimie
+
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-artifact
+          path: eftimie/outputs
+
+  infer:
+    name: Infer & Test API
+    needs: train
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            eftimie
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.7'
+
+      - name: Install dependencies
+        run: pip install -r eftimie/requirements.txt
+
+      - name: Download model artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: model-artifact
+          path: eftimie/outputs
+
+      - name: Run tests
+        run: pytest test_app.py
+        working-directory: eftimie
