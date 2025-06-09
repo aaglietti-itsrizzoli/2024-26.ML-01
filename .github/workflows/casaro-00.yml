@@ -1,0 +1,39 @@
+name: Action di Casaro
+on:
+  push:
+
+jobs:
+  Ciao:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ifconfig
+      - run: pip --version
+      - run: lsb_release -d
+      - run: ls -la
+      - run: pwd
+      - run: env
+
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: casaro
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.6' 
+
+      - run: python --version
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        working-directory: casaro
+
+      - name: Run ML script
+        run: python price_prediction.py
+        working-directory: casaro
+
+      - name: Upload data folder and price_prediction.py
+        uses: actions/upload-artifact@v4
+        with:
+          name: ml-artifacts
+          path: casaro/mymodel.joblib
